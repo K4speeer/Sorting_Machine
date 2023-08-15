@@ -90,3 +90,24 @@ class Gate:
         self.close()
         sleep(1.5)
         
+class SortingMachine:
+    def __init__(self, cassette, gates_list):
+        self.cassette = cassette
+        self.gates = gates_list
+        # # The code below used to define each gate from the gate_list as g(i)
+        # # Its equals to : self.g1 = gates_list[0] and so on
+        # # But don't forget to refactor rest of the code that related to the gates
+        # self.gates_prefix = "g"
+        # for i, gate in enumerate(self.gates):
+        #     gate_name = f"{self.gates_prefix}{i+1}"
+        #     setattr(self, gate_name, gate)
+        #
+        # In my case I'll work with 3 gates so i will decalare them individually 
+        self.g1 = self.gates[0]
+        self.g2 = self.gates[1]
+        self.g3 = self.gates[2]
+        
+            
+   
+        
+            
