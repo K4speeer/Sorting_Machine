@@ -1,0 +1,229 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    padding: 1rem;
+}
+
+img {
+    width: 100px;
+    height: 100px;
+}
+
+.range-ruler {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+button {
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+    background-color: transparent;
+    border: 0.125em solid #1A1A1A;
+    border-radius: 0.9375em;
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+    color: #3B3B3B;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    font-size: 16px;
+    font-weight: 600;
+    line-height: normal;
+    margin: 0;
+    min-height: 3.75em;
+    min-width: 0;
+    outline: none;
+    padding: 1em 2.3em;
+    text-align: center;
+    text-decoration: none;
+    -webkit-transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+    transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+    -moz-user-select: none;
+     -ms-user-select: none;
+         user-select: none;
+    -webkit-user-select: none;
+    -ms-touch-action: manipulation;
+        touch-action: manipulation;
+    will-change: transform;
+   }
+   
+button:disabled {
+    pointer-events: none;
+}
+   
+button:hover {
+    color: #fff;
+    background-color: #1A1A1A;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+            box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+    -webkit-transform: translateY(-2px);
+        -ms-transform: translateY(-2px);
+            transform: translateY(-2px);
+}
+   
+button:active {
+    -webkit-box-shadow: none;
+            box-shadow: none;
+    -webkit-transform: translateY(0);
+        -ms-transform: translateY(0);
+            transform: translateY(0);
+}
+
+
+header {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}
+
+.profile-icon {
+    float: left;
+}
+
+.profile-icon img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+h1 {
+    display: inline;
+    margin-left: 1rem;
+}
+
+main {
+    padding: 2rem;
+}
+
+.patient-info,
+.therapy-modes,
+.settings,
+.history {
+    background-color: #fff;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 5px;
+}
+.therapy-modes .btn,
+.history .btn,
+.settings button[type="submit"],
+.settings button[type="reset"] {
+    width: 100%;
+}
+#noteBox{
+    margin-top: 40px;
+    margin-bottom: 40px;
+    align-content: center;
+    text-align: center;
+}#tera-logo{
+    margin-bottom: 0;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+
+  th, td{
+    padding: 5px;
+  }
+  
+  th:nth-child(odd),
+  td:nth-child(odd) {
+    background-color: #dddddd;
+  }
+
+  .loader {
+    box-sizing: border-box;
+    display: inline-block;
+    width: 50px;
+    height: 80px;
+    border-top: 5px solid #fff;
+    border-bottom: 5px solid #fff;
+    position: relative;
+    background: linear-gradient(#ADD8E6 30px, transparent 0) no-repeat;
+    background-size: 2px 40px;
+    background-position: 50% 0px;
+    animation: spinx 5s linear infinite;
+  }
+  
+  .loader:before, .loader:after {
+    content: "";
+    width: 40px;
+    left: 50%;
+    height: 35px;
+    position: absolute;
+    top: 0;
+    transform: translatex(-50%);
+    background: rgba(255,255,255, 0.4);
+    border-radius: 0 0 20px 20px;
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: 0 0px;
+    animation: lqt 5s linear infinite;
+  }
+  
+  .loader:after {
+    top: auto;
+    bottom: 0;
+    border-radius: 20px 20px 0 0;
+    animation: lqb 5s linear infinite;
+  }
+  
+  @keyframes lqt {
+    0%, 100% {
+      background-image: linear-gradient(#ADD8E6 40px, transparent 0);
+      background-position: 0% 0px;
+    }
+  
+    50% {
+      background-image: linear-gradient(#ADD8E6 40px, transparent 0);
+      background-position: 0% 40px;
+    }
+  
+    50.1% {
+      background-image: linear-gradient(#ADD8E6 40px, transparent 0);
+      background-position: 0% -40px;
+    }
+  }
+  
+  @keyframes lqb {
+    0% {
+      background-image: linear-gradient(#ADD8E6 40px, transparent 0);
+      background-position: 0 40px;
+    }
+  
+    100% {
+      background-image: linear-gradient(#ADD8E6 40px, transparent 0);
+      background-position: 0 -40px;
+    }
+  }
+  
+  @keyframes spinx {
+    0%, 49% {
+      transform: rotate(0deg);
+      background-position: 50% 36px;
+    }
+  
+    51%, 98% {
+      transform: rotate(180deg);
+      background-position: 50% 4px;
+    }
+  
+    100% {
+      transform: rotate(360deg);
+      background-position: 50% 36px;
+    }
+  }
+      
+    
+  
