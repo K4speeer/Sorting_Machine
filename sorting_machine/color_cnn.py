@@ -13,6 +13,13 @@ class_names = open("./color_labels.txt", "r").readlines()
 
 
 def color_model_predict(img_path):
+    '''
+    - Input: Path of th Image to be processed by the CNN model
+    - Returns : A list of parameters:
+        - [0] class index 
+        - [1] class_name 
+        - [2] confidence_score
+    '''
     # Create the array of the right shape to feed into the keras model
     # The 'length' or number of images you can put into the array is
     # determined by the first position in the shape tuple, in this case 1
