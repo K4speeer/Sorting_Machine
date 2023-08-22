@@ -3,7 +3,7 @@ from pymata4 import pymata4
 import time
 import os
 import datetime
-from sm_objects import SortingMachine, Cassette, Item, Gate
+from .sm_objects import SortingMachine, Cassette, Item, Gate
 from picamera2 import Picamera2
 
 ir_pin = 12
