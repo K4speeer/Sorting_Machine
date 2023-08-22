@@ -100,10 +100,11 @@ Main Settings
                   <p style="font-size: small"><strong>/dev/ttyACM#</strong>. Port 0 is Default.</p>
                 </div>
                 <select class="form-select" name="com_port" aria-label="com_port">
-                  <option value="0" selected>0</option>
-              <option value="1" >1</option>
-              <option value="2" >2</option>
-              <option value="3" >3</option>
+                  <option value="0" selected>Auto-Detected</option>    
+              <option value="1" >0</option>
+              <option value="2" >1</option>
+              <option value="3" >2</option>
+              <option value="4" >3</option>
                 </select>
               </li>
             </ul>
@@ -185,8 +186,7 @@ Main Settings
             <p style="font-size: small"><strong>Choose one to test.</strong></p>
           </div>
           <select class="form-select" name="servo-gates" aria-label="Select Gate">
-            <option selected value="0">Feeder Gate</option>
-            <option value="1">Gate 1</option>
+            <option value="1" selected>Gate 1</option>
             <option value="2">Gate 2</option>
             <option value="3">Gate 3</option>
           </select>
