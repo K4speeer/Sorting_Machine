@@ -1,35 +1,135 @@
-
-    // Function to toggle radio buttons visibility in SORT page
-    function toggleRadioGroupVisibility() {
+document.addEventListener("DOMContentLoaded", function () {
     const colorRadio = document.getElementById("colorRadio");
     const sizeRadio = document.getElementById("sizeRadio");
-    const cp1 = document.getElementById("cp1");
-    const sp1 = document.getElementById("sp1");
-    const cp2 = document.getElementById("cp2");
-    const sp2 = document.getElementById("sp2");
-    const cp3 = document.getElementById("cp3");
-    const sp3 = document.getElementById("sp3");
+    const colorsizeRadio = document.getElementById("colorsize");
+    const colorRadios = document.querySelectorAll(".colorRadios");
+    const sizeRadios = document.querySelectorAll(".sizeRadios");
+
+    colorRadio.addEventListener("change", toggleRadioGroupVisibility);
+    sizeRadio.addEventListener("change", toggleRadioGroupVisibility);
+    colorsizeRadio.addEventListener("change", toggleRadioGroupVisibility);
+
+    colorRadios.forEach(radio => {
+        radio.addEventListener("change", () => {
+            handleColorRadioChange(radio);
+        });
+    });
+
+    sizeRadios.forEach(radio => {
+        radio.addEventListener("change", () => {
+            handleSizeRadioChange(radio);
+        });
+    });
+
+    toggleRadioGroupVisibility();
+});
+
+function toggleRadioGroupVisibility() {
+    const colorRadio = document.getElementById("colorRadio");
+    const sizeRadio = document.getElementById("sizeRadio");
+    const colorsizeRadio = document.getElementById("colorsize");
+    const gates = document.querySelectorAll(".gate-color-size");
+
     if (colorRadio.checked) {
-    cp1.style.display = "block"; // Show color parameters
-    cp2.style.display = "block";
-    cp3.style.display = "block";
-    sp1.style.display = "none";   // Hide size parameters
-    sp2.style.display = "none";
-    sp3.style.display = "none";
+        handleColorScenario(gates);
     } else if (sizeRadio.checked) {
-    cp1.style.display = "none";   // Hide color parameters
-    cp2.style.display = "none";
-    cp3.style.display = "none";
-    sp1.style.display = "block";  // Show size parameters
-    sp2.style.display = "block";
-    sp3.style.display = "block";
-    } else {
-    cp1.style.display = "block"; // Show both color and size parameters
-    cp2.style.display = "block";
-    cp3.style.display = "block";
-    sp1.style.display = "block";
-    sp2.style.display = "block";
-    sp3.style.display = "block";
+        handleSizeScenario(gates);
+    } else if (colorsizeRadio.checked) {
+        handleColorSizeScenario(gates);
     }
 }
-document.getElementById("myForm").addEventListener("change", toggleRadioGroupVisibility);
+
+function handleColorRadioChange(selectedRadio) {
+    const gateId = selectedRadio.getAttribute("data-gate");
+    const otherGates = document.querySelectorAll(`.gate-color-size:not([data-gate="${gateId}"])`);
+    const selectedColor = selectedRadio.value;
+    
+    otherGates.forEach(gate => {
+        const otherColorRadios = gate.querySelectorAll(".colorRadios");
+        otherColorRadios.forEach(radio => {
+            if (radio.value === selectedColor) {
+                radio.disabled = true;
+            } else {
+                radio.disabled = false;
+            }
+        });
+    });
+}
+
+function handleSizeRadioChange(selectedRadio) {
+    const gateId = selectedRadio.getAttribute("data-gate");
+    const otherGates = document.querySelectorAll(`.gate-color-size:not([data-gate="${gateId}"])`);
+    const selectedSize = selectedRadio.value;
+
+    otherGates.forEach(gate => {
+        const otherSizeRadios = gate.querySelectorAll(".sizeRadios");
+        otherSizeRadios.forEach(radio => {
+            if (radio.value === selectedSize) {
+                radio.disabled = true;
+            } else {
+                radio.disabled = false;
+            }
+        });
+    });
+}
+
+function handleColorScenario(gates) {
+    gates.forEach(gate => {
+        const colorOptions = gate.querySelectorAll(".colorRadios");
+        const sizeOptions = gate.querySelectorAll(".sizeRadios");
+        colorOptions.forEach(option => {
+            option.style.display = "block";
+            option.disabled = false;
+        });
+        sizeOptions.forEach(option => {
+            option.style.display = "none";
+            option.disabled = true;
+        });
+    });
+}
+
+function handleSizeScenario(gates) {
+    gates.forEach(gate => {
+        const colorOptions = gate.querySelectorAll(".colorRadios");
+        const sizeOptions = gate.querySelectorAll(".sizeRadios");
+        colorOptions.forEach(option => {
+            option.style.display = "none";
+            option.disabled = true;
+        });
+        sizeOptions.forEach(option => {
+            option.style.display = "block";
+            option.disabled = false;
+        });
+    });
+}
+
+function handleColorSizeScenario(gates) {
+    gates.forEach(gate => {
+        const colorOptions = gate.querySelectorAll(".colorRadios");
+        const sizeOptions = gate.querySelectorAll(".sizeRadios");
+        colorOptions.forEach(option => {
+            option.style.display = "block";
+            option.disabled = false;
+        });
+        sizeOptions.forEach(option => {
+            option.style.display = "block";
+            option.disabled = false;
+        });
+    });
+    
+    // Handle default sizes for colorsize scenario
+    const sizeRadios1 = document.querySelectorAll("[name='sizeRadios1']");
+    const sizeRadios2 = document.querySelectorAll("[name='sizeRadios2']");
+    
+    sizeRadios1.forEach(radio => {
+        if (radio.value === "big") {
+            radio.checked = true;
+        }
+    });
+
+    sizeRadios2.forEach(radio => {
+        if (radio.value === "small") {
+            radio.checked = true;
+        }
+    });
+}
