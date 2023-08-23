@@ -1,3 +1,5 @@
+# Importing Configurations
+from configs import DB_URI, SECRET_KEY
 # Import flask Module
 from flask import Flask
 # Import timedelta to set the server's session lifetime
@@ -9,14 +11,14 @@ from flask_sqlalchemy import SQLAlchemy
 # Defining Flask Object 
 app = Flask(__name__)
 # Adding DB, Security and Session configurations 
-app.config["SECRET_KEY"] = "mySecretKey" # Change the secret key 
+app.config["SECRET_KEY"] = SECRET_KEY # Change the secret key 
 app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=5) # Current session lifetime is 5 minutes
 # You can change it to fit your needs
 
 # SQL Database declartion
 # Link you'r SQL DataBase with it's URI 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///SortingMachine.sqlite3"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False # Change it to True if you want to track modifications
+app.config["SQLALCHEMY_DATABASE_URI"] = DB_URI
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False 
 
 # Defining Database Object
 db = SQLAlchemy(app)

@@ -6,12 +6,7 @@ import datetime
 from .sm_objects import SortingMachine, Cassette, Item, Gate
 from picamera2 import Picamera2
 
-ir_pin = 12
-step_pin = 2
-dir_pin = 4
-servo_configs = {6:[115, 40, 60],
-                 9:[90, 0, 180],
-                 10:[90, 180, 240]}
+
 
 def init_board():
     """Pymata4() board initialization for Serial Communicateion
