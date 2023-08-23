@@ -13,6 +13,7 @@ class Item:
         self.size = None # objects size ("small", "big")
         self.image_path = None # objects image_path
         self.prediction_info = {} # objects prediction info dict (key: prediction type , value: list of prediction result)
+        print("An item initiated successfully")
         
     def get_color(self):
         '''
@@ -127,6 +128,7 @@ class Cassette:
             time.sleep(self.pulse_delay)
         # Adding the rotated angle to the current position to track the position of the cassette
         self.current_pos += angle
+        print(f"Cassette at poistion {self.current_pos}")
         
     def origin(self):
         '''
@@ -151,7 +153,8 @@ class Cassette:
             time.sleep(2)
             # Setting rotation direction back to CW 1 - Logic HIGH 
             self.direction_value = 1
-            
+        print("Cassette at origin position", end="\n")
+           
     def add_item(self, item):
         """Function to add Item object to current items[] of the cassette
 
@@ -159,6 +162,7 @@ class Cassette:
             item (Object): An Item object
         """
         self.items.append(item)
+        print("Item added to Cassette's list")
         
     def not_empty(self):
         """Boolean function to check wethere the cassette is empty or nut
@@ -174,6 +178,7 @@ class Cassette:
                 Used after distributing the items
         """ 
         self.items.clear()
+        print("Cassette's list cleared")
                
 class Gate:
     '''
@@ -231,6 +236,7 @@ class Gate:
             item (int): Item's index from the cassette's current items[] list
         """
         self.items.append(item)
+        print("Item added to list")
     
     def get_objects_quantaty(self):
         """Get total number of objects passed through the gate
@@ -245,12 +251,16 @@ class Gate:
         """
         # Using  Pymata4 object to set the servo to the open_pos angle
         self.board.servo_write(self.pin, self.open_pos)
+        time.sleep(1.5)
+        print("Servo Openned", end="\n")
     
     def close(self):
         """Function to close the gate
         """
         # Using Pymata4 object to set the servo to the close_pos angle
         self.board.servo_write(self.pin, self.close_pos)
+        time.sleep(1.5)
+        print("Servo Closed", end="\n")
     
     def drop_item(self):
         """Function to drop an item in the gate by openning it and closing after delay (1.5 seconds)
@@ -261,6 +271,7 @@ class Gate:
         self.objects_passed += 1
         self.close()
         time.sleep(1.5)
+        print("Item collected!", end="\n")
  
         
 class SortingMachine:
@@ -326,12 +337,14 @@ class SortingMachine:
         Args:
             gates_params (list): list of strings represents sorting parameter per gate
         """
+        print("Setting parameters to gates", end="\n")
         for i, gate in enumerate(self.gates):
             parameter = gates_params[i]
             if parameter:
                 gate.set_param(parameter)
+                print(f"Parameter: {parameter} attached to Gate({gate.pin})", end="\n")
             else:
-                pass
+                print("Last gate left without parameters", end="\n")
         
     def set_general_sort_parameter(self, general_parameter):
         """Sets general sorting parameter ("color" / "size" / "colorsize")
@@ -340,6 +353,7 @@ class SortingMachine:
             general_parameter (str): A global parameter for the machine
         """
         self.sorting_param = general_parameter
+        print(f"General sort parameter set to: {general_parameter}", end="\n")
     
     def set_session_id(self, session_id):
         """Sets Session ID
@@ -348,6 +362,7 @@ class SortingMachine:
             session_id (int): Session ID
         """
         self.session_id = session_id
+        print(f"session ID set to: {session_id}", end="\n")
         
     def take_picture(file_name):
         """Image Capturing function
@@ -361,6 +376,7 @@ class SortingMachine:
             cam.start()
             # Capture an image and saving it in file_name location
             cam.capture_file(file_name)
+            print(f"Captured and saved file to: {file_name}", end="\n")
         
     def ir_listener(self):
         """IR obstacle sensor listener function
@@ -383,16 +399,20 @@ class SortingMachine:
         """
         # Getting current time using time() function
         start_time = time.time()
+        print(f"Timer started at: {start_time} and will work for {duration} sec", end="\n")
         # Start while loop for passed duration as acondition
         while time.time() - start_time < duration:
             # Checking the value of IR-Sensor
             # If IR detects an obstacle, the return expression gets us out of the loop and the function 
             if self.ir_listener():
+                print("Timer interrupted !!!", end="\n")
                 return
         # If during timer working there was not any obstacles then:
         # We check at which stage of sorting process we are
         # If the cassette was feeded earlier, then we move to next stages: sort() -> distribute() -> finish_and_report()
+        print("Timer expired duration time", end="\n")
         if self.cassette.not_empty():
+            print("Going to sort already fed items", end="\n")
             self.sort()
             self.distribute()
             self.finish_and_report()
@@ -401,6 +421,7 @@ class SortingMachine:
             self.finish_and_report()
                   
     def feed(self):
+        print("Feeding an object to the machine", end="\n")
         """Cassette feeding function
         """
         time.sleep(2)
@@ -409,16 +430,21 @@ class SortingMachine:
         # Capture image of the item passed to the machine
         self.take_picture(img_file_name)
         # Creating an Item() object for the item passed
+        print("Creating Item object to save item's details", end="\n")
         item = Item()
         # Setting the related image_path to item
+        print("Taking an image of the item", end="\n")
         item.set_image_path(img_file_name)
         # Adding item to the cassette's current items[] list
+        print("Adding item to the cassette's current item list", end="\n")
         self.cassette.add_item(item)
         # Incrementing the number of the objects passed 
         self.total_objects += 1
+        print(f"incrementing total objects number to become: {self.total_objects}", end="\n")
         time.sleep(1)
         # Rotating the cassette to prepare for next item
         self.cassette.rotate(self.cassette.feed_step)
+        print("Moving to the next sector. Preparing for new item", end="\n")
         time.sleep(1)
         
     def classify_color(self, item, model_function=None):
@@ -441,6 +467,7 @@ class SortingMachine:
         item.set_color(class_name)
         # Setting prediction results to Item() object 
         item.set_prediction_info("color", result) 
+        print(result, end="\n")
         return class_name 
     
     def classify_size(self, item, model_function=None):
@@ -463,6 +490,7 @@ class SortingMachine:
         item.set_size(class_name)
         # Setting prediction results to Item() object
         item.set_prediction_info("size", result) 
+        print(result, end="\n")
         return class_name
         
     def sort(self):
@@ -471,10 +499,14 @@ class SortingMachine:
         # Based on the general sorting parameter iterates throgh all items in the cassette's current item's list
         # And passing them to related classification functions (classify_color() / classify_size())
         # And sorting theme to the related gates by there indexes
+        print("Starting Classification and Sorting Process", end="\n")
         if self.sorting_param == "size":
             # Importing size prediction function from size_cnn module
+            print("Importing Size CNN Model", end="\n")
             from size_cnn import size_model_predict as sp 
+            print("Model imported successfully", end="\n")
             # Checking each item in the cassette's list
+            print("Iterating through items in cassette's current items list", end="\n")
             for i, item in enumerate(self.cassette.items):
                 # Passing the items to classification function to get the class_name that the object belongs to 
                 class_name = self.classify_size(item, sp)
@@ -487,15 +519,22 @@ class SortingMachine:
                     if gate.get_param() == class_name:
                         # If the item matches the gate, it's index in the cassette is sent to the gate waiting list  
                         gate.add_item(i)
+                        print(f"Item added to Gate({gate.pin}) waiting list", end="\n")
                     # If not matching, then it should be sent to "others" gate, which is the last gate in of the machine    
                     else:
                         self.g3.add_item(i)
+                        print('Item added to "Others" Gate waiting list', end="\n")
         
         # The same algorithm is applied for other "colorsize" and "color" general sorting parameters
         
         elif self.sorting_param == "colorsize":
+            print("Importing Size CNN Model", end="\n")
             from size_cnn import size_model_predict as sp 
+            print("Model imported successfully", end="\n")
+            print("Importing Color CNN Model", end="\n")
             from color_cnn import color_model_predict as cp
+            print("Model imported successfully", end="\n")
+            print("Iterating through items in cassette's current items list", end="\n")
             for i, item in enumerate(self.cassette.items):
                 size_class = self.classify_size(item, sp)
                 color_class = self.classify_color(item, cp)
@@ -504,25 +543,35 @@ class SortingMachine:
                 for gate in self.gates[:2]:
                     if gate.get_param() == mixed_param:
                         gate.add_item(i)
+                        print(f"Item added to Gate({gate.pin}) waiting list", end="\n")
                     else:
                         self.g3.add_item(i)
+                        print('Item added to "Others" Gate waiting list', end="\n")
         
         else:
+            print("Importing Color CNN Model", end="\n")
             from color_cnn import color_model_predict as cp
+            print("Model imported successfully", end="\n")
+            print("Iterating through items in cassette's current items list", end="\n")
             for i, item in enumerate(self.cassette.items):
                 class_name = self.classify_color(item, cp)
                 self.classified_objects.append(item)
                 for gate in self.gates[:2]:
                     if gate.get_param() == class_name:
                         gate.add_item(i)
+                        print(f"Item added to Gate({gate.pin}) waiting list", end="\n")
                     else:
                         self.g3.add_item(i)
+                        print('Item added to "Others" Gate waiting list', end="\n")
             
     def distribute(self):
         """Item Distributing on the related gates after sort
         """
         # For loop to iterate on gates 
+        print("Distributing items from cassette's current items list", end="\n")
+        print("Iterating through gates and getting waiting lists", end="\n")
         for gate in self.gates:
+            print(f"At Gate({gate.pin})", end="\n")
             # Set the cassette to the origin position to start with the object with index = 0
             self.cassette.origin()
             prev_index = 0
@@ -530,9 +579,11 @@ class SortingMachine:
             for i, item_position in enumerate(gate.items):
                 # because of the difference between the positions of the gates and the origin position of th cassette and the sectors
                 # The first item in the list moves to the gate directly 
+                print(f"Moving to item {i}", end="\n")
                 if i == 0:
                     # Rotating the cassette with the angle that represented as gate's position
                     self.cassette.rotate(gate.position)
+                    time.sleep(1.5)
                 # Other item's in the list move small steps that calculated using the following formule
                 # The rotation angle = (item's position in the cassette (index) - previous item's index) * 36° the angle between sectors (cassette feed_step)
                 else:
@@ -546,15 +597,20 @@ class SortingMachine:
                 # Dropping the item in the gate
                 gate.drop_item()
             # Clearing gate's waiting list from items 
+            print(f"Clearing Gate({gate.pin}) waiting list", end="\n")
             gate.items.clear()
         # Clearing Cassette's current items list
+        print("Clearing cassette's item list", end="\n")
         self.cassette.clear_items()
         # Clearing the classified items list
+        print("Clearing machine's classified items list", end="\n")
         self.classified_objects.clear()
         # Setting the cassette back to the origin for the next wave of items
+        print("setting cassette to origin", end="\n")
         self.cassette.origin()
             
     def finish_and_report(self):
+        print("Finishing and generating report", end="\n")
         """Generating a report list with data about the session
 
         Returns:
@@ -581,6 +637,7 @@ class SortingMachine:
         report.append(end_time)
         # Shutdown the board and end of serial communication between arduino and rasperry-pi
         self.board.shutdown()
+        print("Serial Communication stopped", end="\n")
         
         return report
     
@@ -592,14 +649,15 @@ class SortingMachine:
         target_directory = os.path.join(working_dir, "..", "sessions")
         os.mkdir(os.path.join(target_directory, self.session_name))
         self.images_path = os.path.join(target_directory, self.session_name)
-        
-        
+        print(f"New folder for current session created in: {target_directory}", end="\n")
+        print(f"Image defaut path set to: {self.images_path}", end="\n")    
 
     def run_machine(self):
         """A function to run the sorting machine in a loop
         """
         self.start_time = datetime.datetime.now().strftime("%H:%M:%S")
         self.create_session_folder()
+        print("Machine working cycle started", end="\n")
         while True:
             item_detected = self.ir_listener()
             
