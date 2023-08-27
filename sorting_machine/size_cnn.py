@@ -1,15 +1,18 @@
 import keras # TensorFlow is required for Keras to work
 import PIL as pil   # Pillow [PIL] library to manipulate with images
 import numpy as np # NumPy to manipulate with image matrix
-
+from os import path
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
 
+model_path = path.join(path.dirname(path.abspath(__file__)), "size_model.h5")
+labels_path = path.join(path.dirname(path.abspath(__file__)), "size_labels.txt")
+
 # Load the model
-model = keras.models.load_model("./size_model.h5", compile=False)
+model = keras.models.load_model(model_path, compile=False)
 
 # Load the labels
-class_names = open("./size_labels.txt", "r").readlines()
+class_names = open(labels_path, "r").readlines()
 
 
 def size_model_predict(img_path):
@@ -45,6 +48,8 @@ def size_model_predict(img_path):
     prediction = model.predict(data)
     index = np.argmax(prediction)
     class_name = class_names[index]
+    class_name = class_name.split(" ")[1]
+    class_name = class_name.split("\n")[0]
     confidence_score = prediction[0][index]
 
     # Print prediction and confidence score
