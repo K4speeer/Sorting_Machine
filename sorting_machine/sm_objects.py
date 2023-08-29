@@ -1,5 +1,7 @@
 import time
 import datetime
+import os
+from picamera2 import Picamera2
 
 class Item:
     '''
@@ -127,8 +129,11 @@ class Cassette:
             # Making a delay for pulse_delay (seconds)
             time.sleep(self.pulse_delay)
         # Adding the rotated angle to the current position to track the position of the cassette
-        self.current_pos += angle
-        print(f"Cassette at poistion {self.current_pos}")
+        if self.direction_value == 1:
+            self.current_pos += angle
+        else:
+            self.current_pos -= angle
+        print(f"Cassette at poistion {self.current_pos%360}")
         
     def origin(self):
         '''
@@ -163,7 +168,10 @@ class Cassette:
         """
         self.items.append(item)
         print("Item added to Cassette's list")
-        
+    
+    def not_full(self):
+        return True if len(self.items) < 10 else False    
+    
     def not_empty(self):
         """Boolean function to check wethere the cassette is empty or nut
 
@@ -251,7 +259,7 @@ class Gate:
         """
         # Using  Pymata4 object to set the servo to the open_pos angle
         self.board.servo_write(self.pin, self.open_pos)
-        time.sleep(1.5)
+        time.sleep(1)
         print("Servo Openned", end="\n")
     
     def close(self):
@@ -259,18 +267,20 @@ class Gate:
         """
         # Using Pymata4 object to set the servo to the close_pos angle
         self.board.servo_write(self.pin, self.close_pos)
-        time.sleep(1.5)
+        time.sleep(1)
         print("Servo Closed", end="\n")
+    
+    def test_servo(self):
+        self.open()
+        self.close()
     
     def drop_item(self):
         """Function to drop an item in the gate by openning it and closing after delay (1.5 seconds)
         """
         self.open()
-        time.sleep(1.5)
         # Increment the number of objects passed by 1
         self.objects_passed += 1
         self.close()
-        time.sleep(1.5)
         print("Item collected!", end="\n")
  
         
@@ -300,7 +310,7 @@ class SortingMachine:
             distribute(): Distributes the items in specific gates based on sort() results
             finish_and_report(): Generates a list with operation report data and shuts the machine down
             create_session_folder(): Creates a folder to store item images taken during the sorting process 
-            run_machine(): Loop function for running the machine 
+            run(): Loop function for running the machine 
     """
     def __init__(self, board, cassette, gates_list, ir_sensor_pin):
         self.cassette = cassette # Cassette() object 
@@ -314,9 +324,9 @@ class SortingMachine:
         #     setattr(self, gate_name, gate)
         #
         # In my case I'll work with 3 gates so i will decalare them individually 
-        self.g1 = self.gates[0]
-        self.g2 = self.gates[1]
-        self.g3 = self.gates[2]
+        # self.g1 = self.gates[0]
+        # self.g2 = self.gates[1]
+        # self.g3 = self.gates[2]
         self.board = board # Pymata4() object representing Arduino board
         self.ir_sensor_pin = ir_sensor_pin # IR-Sensor pin number
         self.board.set_pin_mode_digital_input_pullup(self.ir_sensor_pin) # Declaring IR sensor pin as digital input with pullup resistor activation
@@ -327,9 +337,11 @@ class SortingMachine:
         self.start_time = "" # Session start time
         self.end_time = "" # Session end time
         self.session_id = 0 # Session ID related on database information
-        self.date_info = datetime.datetime.now().strftime("%Y/%m/%d - %H:%M") # Getting current date and time information
-        self.session_name = f"{self.session_id}{self.date_info.split(' - ')[0]}" # Generating a session name using session_id and current date
+        self.date_info = datetime.datetime.now().strftime("%Y-%m-%d - %H:%M") # Getting current date and time information
+        self.session_name = "" # Generating a session name using session_id and current date
         self.images_path = "" # Default image path
+        self.report = []
+        
         
     def set_gates_params(self, gates_params):
         """Sets a sorting parameter for each gate
@@ -362,9 +374,11 @@ class SortingMachine:
             session_id (int): Session ID
         """
         self.session_id = session_id
-        print(f"session ID set to: {session_id}", end="\n")
+        self.session_name = f"{self.session_id}-{self.date_info.split(' - ')[0]}"
+        print(f"Session Name generated to be: {self.session_name}")
+        print(f"Session ID set to: {session_id}", end="\n")
         
-    def take_picture(file_name):
+    def take_picture(self, file_name):
         """Image Capturing function
 
         Args:
@@ -377,6 +391,8 @@ class SortingMachine:
             # Capture an image and saving it in file_name location
             cam.capture_file(file_name)
             print(f"Captured and saved file to: {file_name}", end="\n")
+        
+        time.sleep(1.5)
         
     def ir_listener(self):
         """IR obstacle sensor listener function
@@ -416,36 +432,42 @@ class SortingMachine:
             self.sort()
             self.distribute()
             self.finish_and_report()
+            
         # Else, which means that the cassette is empty, then finish_and_report() operation
         else:
             self.finish_and_report()
                   
     def feed(self):
-        print("Feeding an object to the machine", end="\n")
         """Cassette feeding function
         """
-        time.sleep(2)
-        # Generating image file name and path based on the path of the session folder and items index during the process
-        img_file_name = os.path.join(self.images_path, f'{len(self.total_objects)}.jpg')
-        # Capture image of the item passed to the machine
-        self.take_picture(img_file_name)
-        # Creating an Item() object for the item passed
-        print("Creating Item object to save item's details", end="\n")
-        item = Item()
-        # Setting the related image_path to item
-        print("Taking an image of the item", end="\n")
-        item.set_image_path(img_file_name)
-        # Adding item to the cassette's current items[] list
-        print("Adding item to the cassette's current item list", end="\n")
-        self.cassette.add_item(item)
-        # Incrementing the number of the objects passed 
-        self.total_objects += 1
-        print(f"incrementing total objects number to become: {self.total_objects}", end="\n")
-        time.sleep(1)
-        # Rotating the cassette to prepare for next item
-        self.cassette.rotate(self.cassette.feed_step)
-        print("Moving to the next sector. Preparing for new item", end="\n")
-        time.sleep(1)
+        if self.cassette.not_full():
+            print("Feeding an object to the machine", end="\n")
+            time.sleep(0.5)
+            # Generating image file name and path based on the path of the session folder and items index during the process
+            img_file_name = f'{self.images_path}/{self.total_objects + 1}.jpg'
+            # Capture image of the item passed to the machine
+            self.take_picture(img_file_name)
+            # Creating an Item() object for the item passed
+            print("Creating Item object to save item's details", end="\n")
+            item = Item()
+            # Setting the related image_path to item
+            print("Taking an image of the item", end="\n")
+            item.set_image_path(img_file_name)
+            # Adding item to the cassette's current items[] list
+            print("Adding item to the cassette's current item list", end="\n")
+            self.cassette.add_item(item)
+            # Incrementing the number of the objects passed 
+            self.total_objects += 1
+            print(f"incrementing total objects number to become: {self.total_objects}", end="\n")
+            time.sleep(0.5)
+            # Rotating the cassette to prepare for next item
+            self.cassette.rotate(self.cassette.feed_step)
+            print("Moving to the next sector. Preparing for new item", end="\n")
+            time.sleep(0.5)
+        
+        else:
+            self.sort()
+            self.distribute()
         
     def classify_color(self, item, model_function=None):
         """Classification funcrion for Color parameter
@@ -503,11 +525,12 @@ class SortingMachine:
         if self.sorting_param == "size":
             # Importing size prediction function from size_cnn module
             print("Importing Size CNN Model", end="\n")
-            from size_cnn import size_model_predict as sp 
+            from .size_cnn import size_model_predict as sp 
             print("Model imported successfully", end="\n")
             # Checking each item in the cassette's list
             print("Iterating through items in cassette's current items list", end="\n")
             for i, item in enumerate(self.cassette.items):
+                item_added = False
                 # Passing the items to classification function to get the class_name that the object belongs to 
                 class_name = self.classify_size(item, sp)
                 # Adding the item after classification to related list
@@ -521,21 +544,25 @@ class SortingMachine:
                         gate.add_item(i)
                         print(f"Item added to Gate({gate.pin}) waiting list", end="\n")
                     # If not matching, then it should be sent to "others" gate, which is the last gate in of the machine    
-                    else:
-                        self.g3.add_item(i)
-                        print('Item added to "Others" Gate waiting list', end="\n")
+                        item_added = True
+                        break
+                    
+                if not item_added:
+                    self.gates[-1].add_item(i)
+                    print('Item added to "Others" Gate waiting list', end="\n")
         
         # The same algorithm is applied for other "colorsize" and "color" general sorting parameters
         
         elif self.sorting_param == "colorsize":
             print("Importing Size CNN Model", end="\n")
-            from size_cnn import size_model_predict as sp 
+            from .size_cnn import size_model_predict as sp 
             print("Model imported successfully", end="\n")
             print("Importing Color CNN Model", end="\n")
-            from color_cnn import color_model_predict as cp
+            from .color_cnn import color_model_predict as cp
             print("Model imported successfully", end="\n")
             print("Iterating through items in cassette's current items list", end="\n")
             for i, item in enumerate(self.cassette.items):
+                item_added = False
                 size_class = self.classify_size(item, sp)
                 color_class = self.classify_color(item, cp)
                 mixed_param = f"{size_class}{color_class}"
@@ -544,25 +571,32 @@ class SortingMachine:
                     if gate.get_param() == mixed_param:
                         gate.add_item(i)
                         print(f"Item added to Gate({gate.pin}) waiting list", end="\n")
-                    else:
-                        self.g3.add_item(i)
-                        print('Item added to "Others" Gate waiting list', end="\n")
+                        item_added = True
+                        break
+                
+                if not item_added:
+                    self.gates[-1].add_item(i)
+                    print('Item added to "Others" Gate waiting list', end="\n")
         
         else:
             print("Importing Color CNN Model", end="\n")
-            from color_cnn import color_model_predict as cp
+            from .color_cnn import color_model_predict as cp
             print("Model imported successfully", end="\n")
             print("Iterating through items in cassette's current items list", end="\n")
             for i, item in enumerate(self.cassette.items):
+                item_added = False
                 class_name = self.classify_color(item, cp)
                 self.classified_objects.append(item)
                 for gate in self.gates[:2]:
                     if gate.get_param() == class_name:
                         gate.add_item(i)
                         print(f"Item added to Gate({gate.pin}) waiting list", end="\n")
-                    else:
-                        self.g3.add_item(i)
-                        print('Item added to "Others" Gate waiting list', end="\n")
+                        item_added = True
+                        break
+                        
+                if not item_added:
+                    self.gates[-1].add_item(i)
+                    print('Item added to "Others" Gate waiting list', end="\n")
             
     def distribute(self):
         """Item Distributing on the related gates after sort
@@ -581,19 +615,20 @@ class SortingMachine:
                 # The first item in the list moves to the gate directly 
                 print(f"Moving to item {i}", end="\n")
                 if i == 0:
-                    # Rotating the cassette with the angle that represented as gate's position
-                    self.cassette.rotate(gate.position)
-                    time.sleep(1.5)
+                    # Rotating the cassette with the angle that represented as gate's position 
+                    self.cassette.rotate((item_position * 36) + gate.position)
+                    time.sleep(0.5)
                 # Other item's in the list move small steps that calculated using the following formule
                 # The rotation angle = (item's position in the cassette (index) - previous item's index) * 36° the angle between sectors (cassette feed_step)
                 else:
                     # Getting the index of the item based on previous item's position 
                     indexed_position = item_position - prev_index
                     # Rotating the cassette
-                    self.cassette.rotate(indexed_position * self.cassette.feed_step)
-                    time.sleep(1.5)
-                    # Setting the passed item's index as previous index 
-                    prev_index = item_position 
+                    self.cassette.rotate(indexed_position * self.cassette.feed_step)    
+                    time.sleep(0.5)
+                
+                # Setting the passed item's index as previous index 
+                prev_index = item_position 
                 # Dropping the item in the gate
                 gate.drop_item()
             # Clearing gate's waiting list from items 
@@ -630,7 +665,7 @@ class SortingMachine:
         report.append(total_objects)
         for gate in self.gates:
             report.append(gate.get_param())
-            report.append(gate.get_objexts_quantaty())
+            report.append(gate.get_objects_quantaty())
         start_time = self.start_time
         end_time = datetime.datetime.now().strftime("%H:%M:%S")
         report.append(start_time)
@@ -639,40 +674,69 @@ class SortingMachine:
         self.board.shutdown()
         print("Serial Communication stopped", end="\n")
         
-        return report
+        self.report = report 
+    
+    def get_report(self):
+        """Returns a report of a session
+
+        Returns:
+            list: Session output data
+        """
+        return self.report
     
     def create_session_folder(self):
         """Creating a folder to store object's picture that captured during sorting session
 
         """
         working_dir = os.path.dirname(os.path.abspath(__file__))
-        target_directory = os.path.join(working_dir, "..", "sessions")
-        os.mkdir(os.path.join(target_directory, self.session_name))
-        self.images_path = os.path.join(target_directory, self.session_name)
-        print(f"New folder for current session created in: {target_directory}", end="\n")
-        print(f"Image defaut path set to: {self.images_path}", end="\n")    
+        target_directory = os.path.join(working_dir, "sessions", self.session_name)
+        
+        if os.path.exists(target_directory):
+            if not os.listdir(target_directory):
+                print("Directroy already exists and empty")
+                self.images_path = target_directory
+                return
+            else:
+                index = 1
+                while True:
+                    new_dir_name = f"{target_directory}_{index}"
+                    if not os.path.exists(new_dir_name):
+                        os.mkdir(new_dir_name)
+                        print(f"New directory created {new_dir_name}")
+                        self.images_path = new_dir_name
+                        return
+                    index += 1
+            
+        else:
+            os.mkdir(os.path.join(target_directory))
+            self.images_path = target_directory
+            print(f"New folder for current session created in: {target_directory}", end="\n")
+            print(f"Image default path set to: {self.images_path}", end="\n")    
 
-    def run_machine(self):
+    def run(self):
         """A function to run the sorting machine in a loop
         """
         self.start_time = datetime.datetime.now().strftime("%H:%M:%S")
         self.create_session_folder()
         print("Machine working cycle started", end="\n")
+        prev_item_detected = True
         while True:
             item_detected = self.ir_listener()
             
-            if not item_detected:
+            if item_detected:
+                prev_item_detected = item_detected  
+                self.feed()
+            else:
                 self.timer(15)
-                if item_detected:
+                timer_interrupted = True
+                if timer_interrupted:
+                    prev_item_detected = item_detected
                     self.feed()
                 else:
-                    if self.prev_item_detected:
+                    if prev_item_detected:
                         self.sort()
                         self.distribute()
                     else:
                         self.finish_and_report()
-            else:
-                self.feed()
-            
-            self.prev_item_detected = item_detected  
+                         
         
