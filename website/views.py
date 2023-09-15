@@ -44,24 +44,24 @@ def home():
             return redirect("/full_history") 
         else:
             return render_template("home.html")
-    if "finishing" in session:
-        generalParameters = ["color", "size", "colorsize"]
-        gatesList = ["Gate1", "Gate2"]
-        colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
-        sizeList = ["small", "big"]        
-        gatesParams = []
-        board = ''
-        machine = ''
-        session.pop("gen_param", None)
-        session.pop("Gate1_color", None)
-        session.pop("Gate1_size", None)
-        session.pop("Gate2_color", None)
-        session.pop("Gate2_size", None)
-        session.pop("session_id", None)
-        session.pop("gates_params", None)
-        session.pop('start', None)
-        session.pop('initialize_machine', None)
-        session.pop("finishing", None)
+
+    generalParameters = ["color", "size", "colorsize"]
+    gatesList = ["Gate1", "Gate2"]
+    colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
+    sizeList = ["small", "big"]        
+    gatesParams = []
+    board = ''
+    machine = ''
+    session.pop("gen_param", None)
+    session.pop("Gate1_color", None)
+    session.pop("Gate1_size", None)
+    session.pop("Gate2_color", None)
+    session.pop("Gate2_size", None)
+    session.pop("session_id", None)
+    session.pop("gates_params", None)
+    session.pop('start', None)
+    session.pop('initialize_machine', None)
+    session.pop("finishing", None)
     return render_template("home.html")
 
 
