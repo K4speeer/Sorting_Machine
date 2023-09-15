@@ -59,6 +59,9 @@ def home():
         session.pop("Gate2_size", None)
         session.pop("session_id", None)
         session.pop("gates_params", None)
+        session.pop("finishing", None)
+        session.pop('start', None)
+        session.pop('initialize_machine', None)
     return render_template("home.html")
 
 
@@ -273,6 +276,8 @@ def report(s_id):
     session.pop("Gate2_size", None)
     session.pop("session_id", None)
     session.pop("gates_params", None)
+    session.pop('start', None)
+    session.pop('initialize_machine', None)
     generalParameters = ["color", "size", "colorsize"]
     gatesList = ["Gate1", "Gate2"]
     colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
@@ -309,8 +314,9 @@ def in_process():
         if "stop" in request.form:
             return redirect("/in_process/finishing")
     if 'start' in session:
-        return redirect("/in_process/initializing_machine")
-        
+        if 'initializing_machine' not in session:
+            return redirect("/in_process/initializing_machine")
+
     return render_template("in_process.html", info="Processing")
 
 @views.route("/in_process/initializing_machine", methods=["GET", "POST"])
