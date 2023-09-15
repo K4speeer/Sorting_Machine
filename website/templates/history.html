@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block Title %}
+Sorting History
+{% endblock %}
+{% block tab %}
+<ul class="nav nav-pills nav-fill" style="margin-top: 10px">
+    <li class="nav-item">
+      <a class="nav-link" href="configurations">Configurations</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="sort">Sorting params</a>
+      </li>
+    <li class="nav-item">
+      <a class="nav-link active bg-info" aria-current="page" href="history">History</a>
+    </li>
+  </ul>
+{% endblock %}
+{% block body %}
+<section class="history mt-3">
+  <div class="d-grid gap-2 mt-4" id="noteBox">
+    <h2 class="text-center">Sorting Sessions History</h2>
+  </div>
+  <table class="text-center" style="width: 100%; margin-bottom: 10px; margin-top: 20px;">
+    <tr>
+      <th>Date</th>
+      <th>Total objects</th>
+      <th>Parameters</th>
+      <th>Report</th>
+    </tr>
+    {% for session in sessions %}
+    <tr>
+    <td>{{ session.sessionDate }}</td>
+    <td>{{ session.objectsQuantaty }}</td>
+    <td>{{ session.gate1param }}</td>
+    <td>
+      <a href="{{ url_for('templates', filename='full_report.html')}}" class="btn btn-warning" id="link_gen_report">Report</a>
+    </td>
+    </tr>
+    {% endfor %}
+  </table>
+  <form action="#" method="post">
+  <button class="btn btn-dark d-block mx-auto mb-3" name="full_history" type="submit">View Full History</button>
+</form>
+</section>
+{% endblock %}

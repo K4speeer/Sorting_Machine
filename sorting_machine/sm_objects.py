@@ -1,7 +1,7 @@
 import time
 import datetime
 import os
-from picamera2 import Picamera2
+# from picamera2 import Picamera2
 
 class Item:
     '''
@@ -378,21 +378,21 @@ class SortingMachine:
         print(f"Session Name generated to be: {self.session_name}")
         print(f"Session ID set to: {session_id}", end="\n")
         
-    def take_picture(self, file_name):
-        """Image Capturing function
+    # def take_picture(self, file_name):
+    #     """Image Capturing function
 
-        Args:
-            file_name (string): image file name and path
-        """
-        # Using Picamera2() object to deal with Raspberry-Pi Camera 
-        with Picamera2() as cam:
-            # Initaite the camera
-            cam.start()
-            # Capture an image and saving it in file_name location
-            cam.capture_file(file_name)
-            print(f"Captured and saved file to: {file_name}", end="\n")
+    #     Args:
+    #         file_name (string): image file name and path
+    #     """
+    #     # Using Picamera2() object to deal with Raspberry-Pi Camera 
+    #     with Picamera2() as cam:
+    #         # Initaite the camera
+    #         cam.start()
+    #         # Capture an image and saving it in file_name location
+    #         cam.capture_file(file_name)
+    #         print(f"Captured and saved file to: {file_name}", end="\n")
         
-        time.sleep(1.5)
+    #     time.sleep(1.5)
         
     def ir_listener(self):
         """IR obstacle sensor listener function
@@ -446,7 +446,7 @@ class SortingMachine:
             # Generating image file name and path based on the path of the session folder and items index during the process
             img_file_name = f'{self.images_path}/{self.total_objects + 1}.jpg'
             # Capture image of the item passed to the machine
-            self.take_picture(img_file_name)
+            # self.take_picture(img_file_name)
             # Creating an Item() object for the item passed
             print("Creating Item object to save item's details", end="\n")
             item = Item()
