@@ -45,12 +45,13 @@ def home():
         else:
             return render_template("home.html")
     if "session_id" in session:
+        if board != "":
+            board.shutdown()
         generalParameters = ["color", "size", "colorsize"]
         gatesList = ["Gate1", "Gate2"]
         colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
         sizeList = ["small", "big"]        
         gatesParams = []
-        board = ''
         machine = ''
         session.pop("gen_param", None)
         session.pop("Gate1_color", None)
@@ -256,6 +257,7 @@ def report(s_id):
     global colorList
     global sizeList
     global gatesParams
+    global machine
     s_data = sessions.query.get(s_id)
     report_session = {
             "Date": s_data.dateTime,
@@ -278,6 +280,7 @@ def report(s_id):
     session.pop("gates_params", None)
     session.pop('start', None)
     session.pop('initialize_machine', None)
+    machine = ''
     generalParameters = ["color", "size", "colorsize"]
     gatesList = ["Gate1", "Gate2"]
     colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
