@@ -1,3 +1,6 @@
 instance/*
 __pycache__/
 configs.py
+*.sh
+sorting_machine/sessions/*
+website/preview.jpg
