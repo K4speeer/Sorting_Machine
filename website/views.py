@@ -39,13 +39,12 @@ def home():
             session["session_id"] = last_id
             if board == str():
                 board = init_board()
-            
             return redirect("/configurations") 
         elif "history" in request.form:
             return redirect("/full_history") 
         else:
             return render_template("home.html")
-    if session:
+    if "finishing" in session:
         generalParameters = ["color", "size", "colorsize"]
         gatesList = ["Gate1", "Gate2"]
         colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
@@ -344,7 +343,6 @@ def configuring():
     machine.set_session_id(session_id)
     machine.set_general_sort_parameter(gen_param)
     machine.set_gates_params(gates_params)
-    session['configuring'] = True
     print("in conf in ")
     return redirect("/in_process/sorting")
     
@@ -356,7 +354,6 @@ def sorting():
         if "stop" in request.form:
             return redirect("/in_process/finishing")
     machine.run()
-    session['sorting'] = True
     print("in sorting in process")
     return redirect("/in_process/finishing")
 
