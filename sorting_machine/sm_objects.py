@@ -123,7 +123,7 @@ class Cassette:
         self.board.digital_write(self.dir_pin, self.direction_value)
         # Calculates steps needed to acheive the desired angle using the formula below:
         # steps per revolution * desired angle / 360°
-        steps_to_rotate = int(self.steps_per_revolution * angle / 360)
+        steps_to_rotate = round(self.steps_per_revolution * angle / 360)
         # for loop to send pulses from the board to the driver
         for _ in range(steps_to_rotate):
             # Setting step_pin value to: 1 -  Logic HIGH
