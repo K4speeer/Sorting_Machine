@@ -37,8 +37,9 @@ def home():
             last_id = sessions.query.count()
             session.permanent = True
             session["session_id"] = last_id
-            if board is str():
+            if board == str():
                 board = init_board()
+            
             return redirect("/configurations") 
         elif "history" in request.form:
             return redirect("/full_history") 
