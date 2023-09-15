@@ -15,7 +15,7 @@ views = Blueprint("views", __name__)
 
 generalParameters = ["color", "size", "colorsize"]
 gatesList = ["Gate1", "Gate2"]
-colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
+colorList = ["blue", "green", "orange", "purple", "red", "yellow", "pink"]
 sizeList = ["small", "big"]        
 gatesParams = []
 board = ''
@@ -49,7 +49,7 @@ def home():
             board.shutdown()
         generalParameters = ["color", "size", "colorsize"]
         gatesList = ["Gate1", "Gate2"]
-        colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
+        colorList = ["blue", "green", "orange", "purple", "red", "yellow", "pink"]
         sizeList = ["small", "big"]        
         gatesParams = []
         machine = ''
@@ -284,7 +284,7 @@ def report(s_id):
         machine = ''
         generalParameters = ["color", "size", "colorsize"]
         gatesList = ["Gate1", "Gate2"]
-        colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
+        colorList = ["blue", "green", "orange", "purple", "red", "yellow", "pink"]
         sizeList = ["small", "big"]        
         gatesParams = []
         session.pop("finishing", None)
