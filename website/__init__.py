@@ -7,6 +7,9 @@ from datetime import timedelta
 # Import SQLAlchemy to manipulate with SQL database
 from flask_sqlalchemy import SQLAlchemy
 
+from flask_debugtoolbar import DebugToolbarExtension
+
+
 # Create_App function to initialize Flask application for further run 
 # Defining Flask Object 
 app = Flask(__name__)
@@ -14,6 +17,11 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = SECRET_KEY # Change the secret key 
 app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=5) # Current session lifetime is 5 minutes
 # You can change it to fit your needs
+
+# app.config['DEBUG_TB_ENABLED'] = True
+# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+
+# toolbar = DebugToolbarExtension(app)
 
 # SQL Database declartion
 # Link you'r SQL DataBase with it's URI 

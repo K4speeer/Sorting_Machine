@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}
+{% endblock %}
+{% block tab %}
+{% endblock %}
+{% block body %}
+
+<div class="container mt-3">
+  <h2 class="text-center">Procced with parameters </h2>
+  <table class="text-center" style="width: 100%; margin-bottom: 10px; margin-top: 20px;">
+    <tr>
+      <th>General</th>
+      <th>Gate 1 Color</th>
+      <th>Gate 1 Size</th>
+      <th>Gate 2 Color</th>
+      <th>Gate 2 Size</th>
+    </tr>
+    <tr>
+    {% for value in configs%}
+   
+    <td>{{ value | title}}</td>
+    {% endfor %}
+  </tr>
+  </table>
+</div>
+<div class="text-center mt-3">
+  <form action="#" method="post" name="btns">
+    <button class="btn btn-success d-block mx-auto my-4" name="start" type="submit">Start</button>
+    </form>
+</div>
+
+{% endblock %}

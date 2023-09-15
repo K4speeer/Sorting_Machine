@@ -15,6 +15,9 @@ class Item:
         self.size = None # objects size ("small", "big")
         self.image_path = None # objects image_path
         self.prediction_info = {} # objects prediction info dict (key: prediction type , value: list of prediction result)
+        self.distination = 0
+        self.index = 0
+        self.gate = None
         print("An item initiated successfully")
         
     def get_color(self):
@@ -45,6 +48,7 @@ class Item:
         '''
         return self.prediction_info
     
+    
     def set_color(self, color):
         '''
         - Input: Color class in string format
@@ -74,7 +78,9 @@ class Item:
         - Sets a key/value data in a prediction_info dict of the object 
         '''
         self.prediction_info[prediction_type] = prediction_result
-
+    
+    def set_gate(self, gate):
+        self.gate = gate
 
 class Cassette:
     '''
@@ -341,7 +347,8 @@ class SortingMachine:
         self.session_name = "" # Generating a session name using session_id and current date
         self.images_path = "" # Default image path
         self.report = []
-        
+        self.timer_interrupted = False
+        self.sort_circle = False
         
     def set_gates_params(self, gates_params):
         """Sets a sorting parameter for each gate
@@ -421,21 +428,16 @@ class SortingMachine:
             # Checking the value of IR-Sensor
             # If IR detects an obstacle, the return expression gets us out of the loop and the function 
             if self.ir_listener():
+                self.timer_interrupted = True
                 print("Timer interrupted !!!", end="\n")
                 return
         # If during timer working there was not any obstacles then:
         # We check at which stage of sorting process we are
         # If the cassette was feeded earlier, then we move to next stages: sort() -> distribute() -> finish_and_report()
-        print("Timer expired duration time", end="\n")
-        if self.cassette.not_empty():
-            print("Going to sort already fed items", end="\n")
-            self.sort()
-            self.distribute()
-            self.finish_and_report()
+        self.timer_interrupted = False
+        return
             
-        # Else, which means that the cassette is empty, then finish_and_report() operation
-        else:
-            self.finish_and_report()
+            
                   
     def feed(self):
         """Cassette feeding function
@@ -464,7 +466,6 @@ class SortingMachine:
             self.cassette.rotate(self.cassette.feed_step)
             print("Moving to the next sector. Preparing for new item", end="\n")
             time.sleep(0.5)
-        
         else:
             self.sort()
             self.distribute()
@@ -539,16 +540,21 @@ class SortingMachine:
                 # These gates have a specific sort parameter
                 for gate in self.gates[:2]:
                     # Getting the parameter that related to the gate and checking if it matches item's class 
+                    item.index = i
                     if gate.get_param() == class_name:
+                        item.set_gate(gate)
                         # If the item matches the gate, it's index in the cassette is sent to the gate waiting list  
                         gate.add_item(i)
+                        item.distination = gate.position + (i * 36)
                         print(f"Item added to Gate({gate.pin}) waiting list", end="\n")
                     # If not matching, then it should be sent to "others" gate, which is the last gate in of the machine    
                         item_added = True
                         break
                     
                 if not item_added:
+                    item.set_gate(self.gates[-1])
                     self.gates[-1].add_item(i)
+                    item.distination = gate.position + (i * 36)
                     print('Item added to "Others" Gate waiting list', end="\n")
         
         # The same algorithm is applied for other "colorsize" and "color" general sorting parameters
@@ -568,14 +574,19 @@ class SortingMachine:
                 mixed_param = f"{size_class}{color_class}"
                 self.classified_objects.append(item)
                 for gate in self.gates[:2]:
+                    item.index = i
                     if gate.get_param() == mixed_param:
+                        item.set_gate(gate)
                         gate.add_item(i)
+                        item.distination = gate.position + (i * 36)
                         print(f"Item added to Gate({gate.pin}) waiting list", end="\n")
                         item_added = True
                         break
                 
                 if not item_added:
+                    item.set_gate(self.gates[-1])
                     self.gates[-1].add_item(i)
+                    item.distination = gate.position + (i * 36)
                     print('Item added to "Others" Gate waiting list', end="\n")
         
         else:
@@ -587,62 +598,94 @@ class SortingMachine:
                 item_added = False
                 class_name = self.classify_color(item, cp)
                 self.classified_objects.append(item)
+                item.index = i
                 for gate in self.gates[:2]:
                     if gate.get_param() == class_name:
                         gate.add_item(i)
+                        item.set_gate(gate)
+                        item.distination = gate.position + (i * 36)
                         print(f"Item added to Gate({gate.pin}) waiting list", end="\n")
                         item_added = True
                         break
                         
                 if not item_added:
+                    item.set_gate(self.gates[-1])
                     self.gates[-1].add_item(i)
+                    item.distination = gate.position + (i * 36)
                     print('Item added to "Others" Gate waiting list', end="\n")
-            
+    
     def distribute(self):
-        """Item Distributing on the related gates after sort
-        """
-        # For loop to iterate on gates 
-        print("Distributing items from cassette's current items list", end="\n")
-        print("Iterating through gates and getting waiting lists", end="\n")
-        for gate in self.gates:
-            print(f"At Gate({gate.pin})", end="\n")
-            # Set the cassette to the origin position to start with the object with index = 0
-            self.cassette.origin()
-            prev_index = 0
-            # Iterating throgh indexes of objects that listed in gate.items[] list
-            for i, item_position in enumerate(gate.items):
-                # because of the difference between the positions of the gates and the origin position of th cassette and the sectors
-                # The first item in the list moves to the gate directly 
-                print(f"Moving to item {i}", end="\n")
-                if i == 0:
-                    # Rotating the cassette with the angle that represented as gate's position 
-                    self.cassette.rotate((item_position * 36) + gate.position)
-                    time.sleep(0.5)
-                # Other item's in the list move small steps that calculated using the following formule
-                # The rotation angle = (item's position in the cassette (index) - previous item's index) * 36° the angle between sectors (cassette feed_step)
-                else:
-                    # Getting the index of the item based on previous item's position 
-                    indexed_position = item_position - prev_index
-                    # Rotating the cassette
-                    self.cassette.rotate(indexed_position * self.cassette.feed_step)    
-                    time.sleep(0.5)
-                
-                # Setting the passed item's index as previous index 
-                prev_index = item_position 
-                # Dropping the item in the gate
-                gate.drop_item()
-            # Clearing gate's waiting list from items 
-            print(f"Clearing Gate({gate.pin}) waiting list", end="\n")
-            gate.items.clear()
-        # Clearing Cassette's current items list
-        print("Clearing cassette's item list", end="\n")
-        self.cassette.clear_items()
-        # Clearing the classified items list
-        print("Clearing machine's classified items list", end="\n")
+        sorted_distances = sorted(item.distination for item in self.classified_objects)
+        sorted_items = []
+        for val in sorted_distances:
+            for j, item in enumerate(self.classified_objects):
+                if item.distination == val:
+                    sorted_items.append(item)
+                    self.classified_objects.pop(j)
+        
+        for item in sorted_items:
+            distance = item.distination
+            self.cassette.rotate(distance)
+            item.gate.drop_item()
+            time.sleep(1)
+            for i in sorted_items:
+                i.distination -= distance
+        
         self.classified_objects.clear()
-        # Setting the cassette back to the origin for the next wave of items
-        print("setting cassette to origin", end="\n")
+        self.cassette.items.clear()
+        for gate in self.gates:
+            gate.items.clear()
         self.cassette.origin()
+        self.sort_circle = True
+        
+        
+                
+            
+    # def distribute(self):
+    #     """Item Distributing on the related gates after sort
+    #     """
+    #     # For loop to iterate on gates 
+    #     print("Distributing items from cassette's current items list", end="\n")
+    #     print("Iterating through gates and getting waiting lists", end="\n")
+    #     for gate in self.gates:
+    #         print(f"At Gate({gate.pin})", end="\n")
+    #         # Set the cassette to the origin position to start with the object with index = 0
+    #         self.cassette.origin()
+    #         prev_index = 0
+    #         # Iterating throgh indexes of objects that listed in gate.items[] list
+    #         for i, item_position in enumerate(gate.items):
+    #             # because of the difference between the positions of the gates and the origin position of th cassette and the sectors
+    #             # The first item in the list moves to the gate directly 
+    #             print(f"Moving to item {i}", end="\n")
+    #             if i == 0:
+    #                 # Rotating the cassette with the angle that represented as gate's position 
+    #                 self.cassette.rotate((item_position * 36) + gate.position)
+    #                 time.sleep(0.5)
+    #             # Other item's in the list move small steps that calculated using the following formule
+    #             # The rotation angle = (item's position in the cassette (index) - previous item's index) * 36° the angle between sectors (cassette feed_step)
+    #             else:
+    #                 # Getting the index of the item based on previous item's position 
+    #                 indexed_position = item_position - prev_index
+    #                 # Rotating the cassette
+    #                 self.cassette.rotate(indexed_position * self.cassette.feed_step)    
+    #                 time.sleep(0.5)
+                
+    #             # Setting the passed item's index as previous index 
+    #             prev_index = item_position 
+    #             # Dropping the item in the gate
+    #             gate.drop_item()
+    #         # Clearing gate's waiting list from items 
+    #         print(f"Clearing Gate({gate.pin}) waiting list", end="\n")
+    #         gate.items.clear()
+    #     # Clearing Cassette's current items list
+    #     print("Clearing cassette's item list", end="\n")
+    #     self.cassette.clear_items()
+    #     # Clearing the classified items list
+    #     print("Clearing machine's classified items list", end="\n")
+    #     self.classified_objects.clear()
+    #     # Setting the cassette back to the origin for the next wave of items
+    #     print("setting cassette to origin", end="\n")
+    #     self.cassette.origin()
             
     def finish_and_report(self):
         print("Finishing and generating report", end="\n")
@@ -657,23 +700,17 @@ class SortingMachine:
             - Start and End time of sorting process
         """
         report = []
-        general_sorting_parameter = self.sorting_param
-        report.append(general_sorting_parameter)
-        date_info = self.date_info
-        report.append(date_info)
-        total_objects = self.total_objects
-        report.append(total_objects)
+        report.append(self.session_id)
+        report.append(self.date_info)
+        report.append(self.start_time)
+        end_time = datetime.datetime.now().strftime("%H:%M:%S")
+        report.append(end_time)
+        report.append(self.total_objects)
+        report.append(self.sorting_param)
         for gate in self.gates:
             report.append(gate.get_param())
             report.append(gate.get_objects_quantaty())
-        start_time = self.start_time
-        end_time = datetime.datetime.now().strftime("%H:%M:%S")
-        report.append(start_time)
-        report.append(end_time)
-        # Shutdown the board and end of serial communication between arduino and rasperry-pi
-        self.board.shutdown()
-        print("Serial Communication stopped", end="\n")
-        
+       
         self.report = report 
     
     def get_report(self):
@@ -719,24 +756,29 @@ class SortingMachine:
         self.start_time = datetime.datetime.now().strftime("%H:%M:%S")
         self.create_session_folder()
         print("Machine working cycle started", end="\n")
-        prev_item_detected = True
+        prev_item_detected = False
         while True:
             item_detected = self.ir_listener()
-            
+            if self.sort_circle:
+                break
             if item_detected:
                 prev_item_detected = item_detected  
                 self.feed()
             else:
+                
                 self.timer(15)
-                timer_interrupted = True
-                if timer_interrupted:
+                if self.timer_interrupted:
                     prev_item_detected = item_detected
                     self.feed()
+                    self.timer_interrupted = False
                 else:
                     if prev_item_detected:
                         self.sort()
                         self.distribute()
+                        self.finish_and_report()
+                        break
                     else:
                         self.finish_and_report()
+                        break
                          
         

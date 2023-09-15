@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block tab %}
+
+{% endblock %}
+{% block body %}
+<div class="text-center mt-4 mb-5">
+    <h3>Full History Report</h3>
+</div>
+{% for session in data %}
+<div class="text-center mx-5">
+    <h6>Session <strong style="color: green;">{{session["ID"]}}</strong> Report</h6>
+</div>
+<table class="text-center mt-3" style="width: 100%; margin-bottom: 10px; margin-top: 20px;">
+    <thead>
+      <tr>
+        <th>Property</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for key, value in session.items() %} 
+      <tr>
+        <td>{{key}}</td>
+        <td>{{value}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endfor %}
+{% endblock %}

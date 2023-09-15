@@ -13,6 +13,7 @@
       href="https://photos.app.goo.gl/z3VYZSTAo5wEyVz48"
     />
     <link rel="stylesheet" href="../static/css/styles.css" />
+    {% block css_link %}{% endblock %}
     <title>{% block Title %}SM Control{% endblock %}</title>
   </head>
   <body>
@@ -49,7 +50,8 @@
                 <h5 style="font-family: fantasy; font-size: small">
                   Designed and Developed by
                 </h5>
-                    <script src="https://gist.github.com/K4speeer/86d42767fa6bb9ce4fc256818bb21cbe.js"></script>
+                <img src="https://gist.githubusercontent.com/K4speeer/86d42767fa6bb9ce4fc256818bb21cbe/raw/420701f7a7c393df469dce335e9428221fbf7364/TERA_Logo.svg" alt=""
+                width="75px" height="75px">
                 <br />
                 <span style="font-size: 10px">2022-2023</span>
               </div>
@@ -58,7 +60,7 @@
         </div>
       </div>
     </div>
-    <script src="{{ url_for('static', filename='scripts/scripts.js')}}">
+    <script src="{{ url_for('static', filename='js/scripts.js')}}">
         // A script function to toggle radio buttons in Sorting parameters page
     </script>
   </body>

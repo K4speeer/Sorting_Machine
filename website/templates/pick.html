@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block Title %}
+Gate Parameters
+{% endblock %}
+{% block tab %}
+<ul class="nav nav-pills nav-fill" style="margin-top: 10px">
+    <li class="nav-item">
+      <a class="nav-link" href="configurations">Configurations</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="/sort">Sorting params</a>
+      </li>
+    <li class="nav-item">
+      <a class="nav-link" href="history">History</a>
+    </li>
+  </ul>
+{% endblock %}
+{% block body %}
+
+
+<div class="mt-4 gap-1 d-grid pt-3" style="background-color: lightgray; border-radius:10px;">
+  <h4 class="text-center fw-bold">Sorting Parameters</h4>
+  <div class="mx-auto">Choose based on which parameters you want to sort</div>
+  
+  <form action="#" name="main" method="POST" class="text-center" id="myForm" >
+    <div class="btn-group" role="group" aria-label="parameter-choose">
+      {% for param in ["color", "size", "colorsize"] %}
+      <input type="radio" class="btn-check" name="gen_param" id={{param}} disabled value={{param}} autocomplete="off" 
+      {% if gen_param == param %} checked {%endif%}>
+      <label class="btn btn-outline-danger" for={{param}}>{{param | title}}</label>
+      {% endfor %}
+    </div>
+  </form>
+<form action="#" name="parameter" method="POST">
+    <div class="mt-4 mx-auto">
+          <div class="container text-center">
+          <h4>{{ gate }} Parameter</h4>
+          <div class="btn-group-vertical my-2" role="group" aria-label="{{gate}}">
+            {% for option in optionList %}
+            <div class="form-check">
+            <input type="radio" class="form-check-input" name="{{gate}}" id="{{gate+option}}" autocomplete="off" value="{{option}}">
+            <label class="form-check-lable" for="{{gate+option}}">{{ option | title}}</label>
+          </div>
+            {% endfor %}
+          </div>
+          </div>
+        </div>
+        <div class="d-grid gap-2 col-6 mx-auto mb-3">
+          <button class="btn btn-primary" type="submit" name="next">Next</button>
+          </div>
+      </form>
+</div>  
+      
+ 
+{% endblock %}

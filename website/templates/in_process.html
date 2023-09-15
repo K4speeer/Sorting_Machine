@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block css_link %}
+<link rel="stylesheet" href="../static/css/loading-animation.css">
+{% endblock %}
+{% block Title%}
+Sorting >>>
+{% endblock %}
+{% block body %}
+<div class="text-center text-big mt-3">
+    <h3 style="font-weight: bold;">{{info}}</h3>
+    <div class="loadingspinner">
+        <div id="square1"></div>
+        <div id="square2"></div>
+        <div id="square3"></div>
+        <div id="square4"></div>
+        <div id="square5"></div>
+      </div>
+</div>
+
+<form action="#" name="process" method="POST" >
+    <div class="mx-auto col-6 d-grid">
+        <button class="btn btn-danger " type="submit" name="stop">
+            Stop Process
+        </button>
+    </div>
+</form>
+
+{% endblock %}

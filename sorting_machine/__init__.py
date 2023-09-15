@@ -27,7 +27,7 @@ def init_machine(board, ir_pin, step_pin, dir_pin, servo_configs):
           f"Direction pin of driver = {dir_pin}")
     gates_list = []
     for key, value in servo_configs.items():
-        pin = key
+        pin = int(key)
         close_pos = value[0]
         open_pos = value[1]
         pos = value[2]
