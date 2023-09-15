@@ -61,7 +61,7 @@ def home():
         session.pop("session_id", None)
         session.pop("gates_params", None)
         session.pop('start', None)
-        session.pop('initialize_machine', None)
+        session.pop('initializing_machine', None)
         session.pop("finishing", None)
     return render_template("home.html")
 
@@ -280,7 +280,7 @@ def report(s_id):
         session.pop("session_id", None)
         session.pop("gates_params", None)
         session.pop('start', None)
-        session.pop('initialize_machine', None)
+        session.pop('initializing_machine', None)
         machine = ''
         generalParameters = ["color", "size", "colorsize"]
         gatesList = ["Gate1", "Gate2"]
@@ -333,8 +333,6 @@ def initing():
     if 'initializing_machine' not in session:
         machine = init_machine(board, IR, STP_P, DIR_P, SRV_CONF)
         session['initializing_machine'] = True
-        return redirect("/in_process/configuring")
-    else:
         return redirect("/in_process/configuring")
     
     return redirect("/in_process")
