@@ -609,7 +609,7 @@ class SortingMachine:
                 if not item_added:
                     item.set_gate(self.gates[-1])
                     self.gates[-1].add_item(i)
-                    item.distination = gate.position + (i * 36)
+                    item.distination = self.gates[-1].position + (i * 36)
                     print('Item added to "Others" Gate waiting list', end="\n")
    
     
