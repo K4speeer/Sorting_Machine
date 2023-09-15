@@ -436,9 +436,7 @@ class SortingMachine:
         # If the cassette was feeded earlier, then we move to next stages: sort() -> distribute() -> finish_and_report()
         self.timer_interrupted = False
         return
-            
-            
-                  
+                         
     def feed(self):
         """Cassette feeding function
         """
@@ -613,6 +611,7 @@ class SortingMachine:
                     self.gates[-1].add_item(i)
                     item.distination = gate.position + (i * 36)
                     print('Item added to "Others" Gate waiting list', end="\n")
+   
     
     def distribute(self):
         sorted_distances = sorted(item.distination for item in self.classified_objects)
@@ -637,8 +636,7 @@ class SortingMachine:
             gate.items.clear()
         self.cassette.origin()
         self.sort_circle = True
-        
-        
+
                 
             
     # def distribute(self):

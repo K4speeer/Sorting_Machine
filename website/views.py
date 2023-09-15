@@ -15,7 +15,7 @@ views = Blueprint("views", __name__)
 
 generalParameters = ["color", "size", "colorsize"]
 gatesList = ["Gate1", "Gate2"]
-colorList = ["black", "blue", "green", "orange", "purple", "red", "yellow"]
+colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
 sizeList = ["small", "big"]        
 gatesParams = []
 board = ''
@@ -48,12 +48,18 @@ def home():
             board.shutdown()
             generalParameters = ["color", "size", "colorsize"]
             gatesList = ["Gate1", "Gate2"]
-            colorList = ["black", "blue", "green", "orange", "purple", "red", "yellow"]
+            colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
             sizeList = ["small", "big"]        
             gatesParams = []
             board = ''
             machine = ''
-            session.clear()
+            session.pop("gen_param", None)
+            session.pop("Gate1_color", None)
+            session.pop("Gate1_size", None)
+            session.pop("Gate2_color", None)
+            session.pop("Gate2_size", None)
+            session.pop("session_id", None)
+            session.pop("gates_params", None)
     return render_template("home.html")
 
 
@@ -185,44 +191,6 @@ def pick_color_size():
     return redirect("/pick")
 
         
-# @views.route("/pick/<parameter>/<gate>", methods=["GET", "POST"])
-# def pick_param(parameter, gate):
-#     print("in pick 3 params")
-#     print(gate)
-#     global gatesList
-#     global colorList
-#     sizeList = ["big", "small"]
-#     options = colorList
-#     if request.method == "POST":
-#         print(request.form)
-#         key = f"{gate}_{parameter}"
-#         print(key)
-#         val = request.form.get(gate)
-#         print(val)
-#         session[key] = val
-#         return redirect("/pick")
-#     gen_param = session["gen_param"]
-#     if parameter == "color":
-#         if gate == gatesList[0]:
-#             return render_template("pick.html", gate=gate, optionList=colorList, gen_param=gen_param)
-        
-#         gate = gatesList[1]
-#         color_to_remove = session["Gate1_color"]
-#         i = colorList.index(color_to_remove)
-#         options = colorList.pop(i)
-#         print(f"popped list = {options}")
-#         return render_template("pick.html", gate=gate, optionList=options, gen_param=gen_param)
-
-#     elif parameter == "size":    
-#         if gate == gatesList[0]:
-#             return render_template("pick.html", gate=gate, optionList=sizeList, gen_param=gen_param)
-#         gate = gatesList[1]
-#         size_to_remove = session["Gate1_size"]
-#         i = sizeList.index(size_to_remove)
-#         options = sizeList.pop(i)
-#         print(f"popped list = {options}")
-#         return render_template("pick.html", gate=gate, optionList=options, gen_param=gen_param)
-
 @views.route("/verify", methods=("GET", "POST"))
 def verify():
     data = []
