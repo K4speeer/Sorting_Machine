@@ -37,29 +37,28 @@ def home():
             last_id = sessions.query.count()
             session.permanent = True
             session["session_id"] = last_id
-            board = init_board()
+            if board is str():
+                board = init_board()
             return redirect("/configurations") 
         elif "history" in request.form:
             return redirect("/full_history") 
         else:
             return render_template("home.html")
     if session:
-        if board != str():
-            board.shutdown()
-            generalParameters = ["color", "size", "colorsize"]
-            gatesList = ["Gate1", "Gate2"]
-            colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
-            sizeList = ["small", "big"]        
-            gatesParams = []
-            board = ''
-            machine = ''
-            session.pop("gen_param", None)
-            session.pop("Gate1_color", None)
-            session.pop("Gate1_size", None)
-            session.pop("Gate2_color", None)
-            session.pop("Gate2_size", None)
-            session.pop("session_id", None)
-            session.pop("gates_params", None)
+        generalParameters = ["color", "size", "colorsize"]
+        gatesList = ["Gate1", "Gate2"]
+        colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
+        sizeList = ["small", "big"]        
+        gatesParams = []
+        board = ''
+        machine = ''
+        session.pop("gen_param", None)
+        session.pop("Gate1_color", None)
+        session.pop("Gate1_size", None)
+        session.pop("Gate2_color", None)
+        session.pop("Gate2_size", None)
+        session.pop("session_id", None)
+        session.pop("gates_params", None)
     return render_template("home.html")
 
 
@@ -249,6 +248,11 @@ def history():
 
 @views.route("/report/<int:s_id>", methods=["GET", "POST"])
 def report(s_id):
+    global generalParameters
+    global gatesList
+    global colorList
+    global sizeList
+    global gatesParams
     s_data = sessions.query.get(s_id)
     report_session = {
             "Date": s_data.dateTime,
@@ -262,7 +266,18 @@ def report(s_id):
             "Gate 2 Objects": s_data.gate2_objects,
             "Gate 3 Parameter": s_data.gate3_params,
             "Gate 3 Objects": s_data.gate3_objects}
-   
+    session.pop("gen_param", None)
+    session.pop("Gate1_color", None)
+    session.pop("Gate1_size", None)
+    session.pop("Gate2_color", None)
+    session.pop("Gate2_size", None)
+    session.pop("session_id", None)
+    session.pop("gates_params", None)
+    generalParameters = ["color", "size", "colorsize"]
+    gatesList = ["Gate1", "Gate2"]
+    colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
+    sizeList = ["small", "big"]        
+    gatesParams = []
     print(report_session)
     return render_template("report.html", report=report_session)
 
