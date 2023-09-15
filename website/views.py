@@ -271,21 +271,23 @@ def report(s_id):
             "Gate 2 Objects": s_data.gate2_objects,
             "Gate 3 Parameter": s_data.gate3_params,
             "Gate 3 Objects": s_data.gate3_objects}
-    session.pop("gen_param", None)
-    session.pop("Gate1_color", None)
-    session.pop("Gate1_size", None)
-    session.pop("Gate2_color", None)
-    session.pop("Gate2_size", None)
-    session.pop("session_id", None)
-    session.pop("gates_params", None)
-    session.pop('start', None)
-    session.pop('initialize_machine', None)
-    machine = ''
-    generalParameters = ["color", "size", "colorsize"]
-    gatesList = ["Gate1", "Gate2"]
-    colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
-    sizeList = ["small", "big"]        
-    gatesParams = []
+    if "finishing" in session:
+        session.pop("gen_param", None)
+        session.pop("Gate1_color", None)
+        session.pop("Gate1_size", None)
+        session.pop("Gate2_color", None)
+        session.pop("Gate2_size", None)
+        session.pop("session_id", None)
+        session.pop("gates_params", None)
+        session.pop('start', None)
+        session.pop('initialize_machine', None)
+        machine = ''
+        generalParameters = ["color", "size", "colorsize"]
+        gatesList = ["Gate1", "Gate2"]
+        colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
+        sizeList = ["small", "big"]        
+        gatesParams = []
+        session.pop("finishing", None)
     print(report_session)
     return render_template("report.html", report=report_session)
 
@@ -331,6 +333,8 @@ def initing():
     if 'initializing_machine' not in session:
         machine = init_machine(board, IR, STP_P, DIR_P, SRV_CONF)
         session['initializing_machine'] = True
+        return redirect("/in_process/configuring")
+    else:
         return redirect("/in_process/configuring")
     
     return redirect("/in_process")
