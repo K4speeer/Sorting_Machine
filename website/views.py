@@ -406,10 +406,7 @@ def finishing():
     
     return redirect(f"/report/{report[0]}")
 
-# @views.route("/report")
-# def report_templ(report_list):
-#     return render_template("report.html", report = report_list)
-    
+   
 @views.route("/preview")
 def cam_preview():
     directory = os.path.dirname(os.path.abspath(__file__))
