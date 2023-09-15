@@ -569,7 +569,7 @@ class SortingMachine:
                 item_added = False
                 size_class = self.classify_size(item, sp)
                 color_class = self.classify_color(item, cp)
-                mixed_param = f"{size_class}{color_class}"
+                mixed_param = f"{color_class}{size_class}"
                 self.classified_objects.append(item)
                 for gate in self.gates[:2]:
                     item.index = i
