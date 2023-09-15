@@ -59,9 +59,9 @@ def home():
         session.pop("Gate2_size", None)
         session.pop("session_id", None)
         session.pop("gates_params", None)
-        session.pop("finishing", None)
         session.pop('start', None)
         session.pop('initialize_machine', None)
+        session.pop("finishing", None)
     return render_template("home.html")
 
 
@@ -314,8 +314,7 @@ def in_process():
         if "stop" in request.form:
             return redirect("/in_process/finishing")
     if 'start' in session:
-        if 'initializing_machine' not in session:
-            return redirect("/in_process/initializing_machine")
+        return redirect("/in_process/initializing_machine")
 
     return render_template("in_process.html", info="Processing")
 
