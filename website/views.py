@@ -44,24 +44,24 @@ def home():
             return redirect("/full_history") 
         else:
             return render_template("home.html")
-
-    generalParameters = ["color", "size", "colorsize"]
-    gatesList = ["Gate1", "Gate2"]
-    colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
-    sizeList = ["small", "big"]        
-    gatesParams = []
-    board = ''
-    machine = ''
-    session.pop("gen_param", None)
-    session.pop("Gate1_color", None)
-    session.pop("Gate1_size", None)
-    session.pop("Gate2_color", None)
-    session.pop("Gate2_size", None)
-    session.pop("session_id", None)
-    session.pop("gates_params", None)
-    session.pop('start', None)
-    session.pop('initialize_machine', None)
-    session.pop("finishing", None)
+    if "session_id" in session:
+        generalParameters = ["color", "size", "colorsize"]
+        gatesList = ["Gate1", "Gate2"]
+        colorList = ["blue", "green", "orange", "purple", "red", "yellow"]
+        sizeList = ["small", "big"]        
+        gatesParams = []
+        board = ''
+        machine = ''
+        session.pop("gen_param", None)
+        session.pop("Gate1_color", None)
+        session.pop("Gate1_size", None)
+        session.pop("Gate2_color", None)
+        session.pop("Gate2_size", None)
+        session.pop("session_id", None)
+        session.pop("gates_params", None)
+        session.pop('start', None)
+        session.pop('initialize_machine', None)
+        session.pop("finishing", None)
     return render_template("home.html")
 
 
@@ -370,8 +370,8 @@ def finishing():
     print(report)
     
     session_date_time = datetime.strptime(report[1], "%Y-%m-%d - %H:%M")
-    session_start_time = datetime.strptime(report[2], "%H:%M:%S")
-    session_end_time = datetime.strptime(report[3], "%H:%M:%S")
+    session_start_time = datetime.strptime(report[2], "%Y-%m-%d - %H:%M:%S")
+    session_end_time = datetime.strptime(report[3], "%Y-%m-%d - %H:%M:%S")
     session_report = sessions(
         dateTime = session_date_time,
         start_time = session_start_time,

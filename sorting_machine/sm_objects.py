@@ -701,7 +701,7 @@ class SortingMachine:
         report.append(self.session_id)
         report.append(self.date_info)
         report.append(self.start_time)
-        end_time = datetime.datetime.now().strftime("%H:%M:%S")
+        end_time = datetime.datetime.now().strftime("%Y-%m-%d - %H:%M:%S")
         report.append(end_time)
         report.append(self.total_objects)
         report.append(self.sorting_param)
@@ -751,7 +751,7 @@ class SortingMachine:
     def run(self):
         """A function to run the sorting machine in a loop
         """
-        self.start_time = datetime.datetime.now().strftime("%H:%M:%S")
+        self.start_time = datetime.datetime.now().strftime("%Y-%m-%d - %H:%M:%S")
         self.create_session_folder()
         print("Machine working cycle started", end="\n")
         prev_item_detected = False
